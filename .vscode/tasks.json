@@ -1,0 +1,61 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "create venv",
+            "type": "shell",
+            "command": "python3",
+            "args": [
+                "-m",
+                "venv",
+                "${workspaceFolder}/venv"
+            ],
+            "group": {
+                "kind": "build"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "destroy venv",
+            "type": "shell",
+            "command": "rm",
+            "args": [
+                "-rf",
+                "${workspaceFolder}/venv"
+            ],
+            "group": {
+                "kind": "build"
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "focus": true
+            }
+        },
+        {
+            "label": "install pydiffchecker",
+            "type": "shell",
+            "dependsOn": [
+                "create venv"
+            ],
+            "command": "${workspaceFolder}/venv/bin/python3",
+            "args": [
+                "-m",
+                "pip",
+                "install",
+                "-e",
+                "${workspaceFolder}"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": [],
+            "presentation": {
+                "focus": true
+            }
+        }
+    ]
+}

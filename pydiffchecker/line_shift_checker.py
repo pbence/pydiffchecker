@@ -33,7 +33,7 @@ class LineShiftChecker:
         return file_list
 
     def __get_shifted_lines_in_file(self, file_info) -> 'Dict[str, str | None]':
-        lines_in_source_file = self.__count_lines_in_source_file(file_info['dst'])
+        lines_in_source_file = self.__count_lines_in_source_file(file_info['src'])
         process_output = subprocess_readlines(['git', 'diff', f'-U{lines_in_source_file}',
                                                self.revision_since, self.revision_until, '--',
                                                file_info['src'], file_info['dst']])

@@ -1,5 +1,5 @@
 import re
-from typing import List, Dict, Sized, Iterable
+from typing import List, Dict, Tuple, Sized, Iterable, Iterator
 from .helper import subprocess_readlines
 
 
@@ -20,7 +20,7 @@ class ShiftedLines(Sized, Iterable):
             return None
         return self.__lines[src_line_index]
 
-    def __iter__(self):
+    def __iter__(self) -> 'Iterator[Tuple[int, int | None]]':
         return iter(self.__lines.items())
 
     def __len__(self) -> int:
@@ -30,7 +30,7 @@ class ShiftedLines(Sized, Iterable):
 class LineShiftChecker:
     DIFF_BLOCK_REGEX = r'@@ -(\d+),(\d+) \+(\d+),(\d+) @@'
 
-    def __init__(self, revision_since, revision_until) -> None:
+    def __init__(self, revision_since: str, revision_until: str) -> None:
         self.revision_since = revision_since
         self.revision_until = revision_until
 
@@ -52,7 +52,7 @@ class LineShiftChecker:
 
         return file_list
 
-    def __get_shifted_lines_in_file(self, file_info) -> ShiftedLines:
+    def __get_shifted_lines_in_file(self, file_info: Dict[str, str]) -> ShiftedLines:
         process_output = subprocess_readlines(['git', 'diff',
                                                self.revision_since, self.revision_until, '--',
                                                file_info['src'], file_info['dst']])
@@ -98,6 +98,6 @@ class LineShiftChecker:
 
         return shifted_lines
 
-    def __count_lines_in_source_file(self, file) -> int:
+    def __count_lines_in_source_file(self, file: str) -> int:
         process_output = subprocess_readlines(['git', 'show', f'{self.revision_since}:{file}'])
         return sum(1 for _ in process_output)

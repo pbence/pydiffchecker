@@ -1,7 +1,7 @@
 from importlib.metadata import version, PackageNotFoundError
 
 
-def get_version():
+def get_version() -> str:
     try:
         return version('pydiffchecker')
     except PackageNotFoundError:

@@ -3,7 +3,7 @@ from .version import get_version
 from .line_shift_checker import LineShiftChecker
 
 
-def main():
+def main() -> None:
     parser = argparse.ArgumentParser(description='Diff checker')
 
     parser.add_argument('-v',

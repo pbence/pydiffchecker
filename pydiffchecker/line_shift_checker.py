@@ -61,6 +61,12 @@ class LineShiftChecker:
                 shifted_lines[f'{file_info["src"]}:{old_start}'] = None
                 old_start += 1
 
+        if not diff_started:
+            # it was a pure rename, so no diff blocks were returned,
+            # we just put the lines into the dict
+            shifted_lines = {f'{file_info["src"]}:{i}': f'{file_info["dst"]}:{i}'
+                             for i in range(0, lines_in_source_file)}
+
         assert lines_in_source_file == len(shifted_lines)
 
         return shifted_lines

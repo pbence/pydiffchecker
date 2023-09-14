@@ -1,5 +1,4 @@
 import argparse
-import json
 from .version import get_version
 from .line_shift_checker import LineShiftChecker
 
@@ -17,6 +16,9 @@ def main():
     args = parser.parse_args()
 
     line_shift_checker = LineShiftChecker(args.revision_since, args.revision_until)
-    out = line_shift_checker.get_shifted_lines()
+    all_shifted_lines = line_shift_checker.get_all_shifted_lines()
 
-    print(json.dumps(out, indent=4))
+    for src_path, shifted_lines in all_shifted_lines.items():
+        print(f'* {src_path}->{shifted_lines.dst_path}:')
+        for src_line_index, dst_line_index in shifted_lines:
+            print(f'    {src_line_index}->{dst_line_index}')

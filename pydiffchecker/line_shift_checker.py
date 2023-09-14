@@ -37,10 +37,10 @@ class LineShiftChecker:
                                                self.revision_since, self.revision_until, '--',
                                                file_info['src'], file_info['dst']])
 
-        diff_started = False
         shifted_lines = {}
-        old_start = 1
-        new_start = 1
+        src_line_index = 1
+        dst_line_index = 1
+        diff_started = False
         for line in process_output:
             matches = re.search(LineShiftChecker.DIFF_BLOCK_REGEX, line)
             if matches:
@@ -48,11 +48,11 @@ class LineShiftChecker:
                 diff_block_dst_start = int(matches.group(3))
 
                 # fill shifted lines between 2 diff blocks
-                for i in range(0, diff_block_src_start - old_start):
-                    shifted_lines[f'{file_info["src"]}:{old_start+i}'] = f'{file_info["dst"]}:{new_start+i}'
+                for i in range(0, diff_block_src_start - src_line_index):
+                    shifted_lines[f'{file_info["src"]}:{src_line_index+i}'] = f'{file_info["dst"]}:{dst_line_index+i}'
 
-                old_start = diff_block_src_start
-                new_start = diff_block_dst_start
+                src_line_index = diff_block_src_start
+                dst_line_index = diff_block_dst_start
                 diff_started = True
                 continue
 
@@ -60,19 +60,19 @@ class LineShiftChecker:
                 continue
 
             if line.startswith(' '):
-                shifted_lines[f'{file_info["src"]}:{old_start}'] = f'{file_info["dst"]}:{new_start}'
-                old_start += 1
-                new_start += 1
+                shifted_lines[f'{file_info["src"]}:{src_line_index}'] = f'{file_info["dst"]}:{dst_line_index}'
+                src_line_index += 1
+                dst_line_index += 1
             elif line.startswith('+'):
-                new_start += 1
+                dst_line_index += 1
             elif line.startswith('-'):
-                shifted_lines[f'{file_info["src"]}:{old_start}'] = None
-                old_start += 1
+                shifted_lines[f'{file_info["src"]}:{src_line_index}'] = None
+                src_line_index += 1
 
         # fill shifted lines until end of file
         lines_in_source_file = self.__count_lines_in_source_file(file_info['src'])
-        for i in range(0, lines_in_source_file - old_start + 1):
-            shifted_lines[f'{file_info["src"]}:{old_start+i}'] = f'{file_info["dst"]}:{new_start+i}'
+        for i in range(0, lines_in_source_file - src_line_index + 1):
+            shifted_lines[f'{file_info["src"]}:{src_line_index+i}'] = f'{file_info["dst"]}:{dst_line_index+i}'
 
         assert lines_in_source_file == len(shifted_lines)
 

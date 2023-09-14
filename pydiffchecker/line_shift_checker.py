@@ -37,7 +37,7 @@ class LineShiftChecker:
                                                self.revision_since, self.revision_until, '--',
                                                file_info['src'], file_info['dst']])
 
-        shifted_lines = {}
+        shifted_lines: 'Dict[str, str | None]' = {}
         src_line_index = 1
         dst_line_index = 1
         diff_started = False

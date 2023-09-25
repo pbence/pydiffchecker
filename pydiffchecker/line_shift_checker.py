@@ -1,6 +1,6 @@
 import re
 from typing import List, Dict, Tuple, Sized, Iterable, Iterator
-from .helper import subprocess_readlines
+from .helper import subprocess_readlines, get_changed_files
 
 
 class ShiftedLines(Sized, Iterable):
@@ -28,6 +28,7 @@ class ShiftedLines(Sized, Iterable):
 
 
 class LineShiftChecker:
+    SUBMODULE_MODE = '160000'
     DIFF_BLOCK_REGEX = r'@@ -(\d+),(\d+) \+(\d+),(\d+) @@'
 
     def __init__(self, revision_since: str, revision_until: str) -> None:
@@ -39,18 +40,8 @@ class LineShiftChecker:
                 for file_info in self.__get_changed_files()}
 
     def __get_changed_files(self) -> List[Dict]:
-        process_output = subprocess_readlines(['git', 'diff', '--name-status', '--diff-filter=MR',
-                                               self.revision_since, self.revision_until])
-
-        file_list = []
-        for line in process_output:
-            raw_file_info = line.split()
-            file_list.append({
-                'src': raw_file_info[1],
-                'dst': raw_file_info[2] if len(raw_file_info) > 2 else raw_file_info[1],
-            })
-
-        return file_list
+        return [file_info for file_info in get_changed_files(self.revision_since, self.revision_until, diff_filter='MR')
+                if file_info['mode_src'] != LineShiftChecker.SUBMODULE_MODE]
 
     def __get_shifted_lines_in_file(self, file_info: Dict[str, str]) -> ShiftedLines:
         process_output = subprocess_readlines(['git', 'diff',

@@ -16,7 +16,7 @@ def subprocess_readlines(cmd, cwd=None) -> Iterator[str]:
 
 
 def get_changed_files(since, until, diff_filter=None, cwd=None):
-    command = ['git', 'diff-tree', '-r']
+    command = ['git', 'diff-tree', '-r', '-M']
     if diff_filter:
         command.extend([f'--diff-filter={diff_filter}'])
     command.extend([since, until])

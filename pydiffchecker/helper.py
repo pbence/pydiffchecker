@@ -3,7 +3,12 @@ from typing import Iterator
 
 
 def subprocess_readlines(cmd, cwd=None) -> Iterator[str]:
-    process = subprocess.Popen(cmd, cwd=cwd, stdout=subprocess.PIPE, text=True)
+    process = subprocess.Popen(cmd,
+                               cwd=cwd,
+                               stdout=subprocess.PIPE,
+                               text=True,
+                               encoding='utf-8',
+                               errors='replace')
 
     for line in process.stdout:
         line = line.rstrip('\n')

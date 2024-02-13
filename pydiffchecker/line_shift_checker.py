@@ -55,8 +55,8 @@ class LineShiftChecker:
         for line in process_output:
             matches = re.search(LineShiftChecker.DIFF_BLOCK_REGEX, line)
             if matches:
-                diff_block_src_start = int(matches.group(1))
-                diff_block_dst_start = int(matches.group(2))
+                diff_block_src_start = max(int(matches.group(1)), 1)  # line number should never be 0
+                diff_block_dst_start = max(int(matches.group(2)), 1)  # line number should never be 0
 
                 # fill shifted lines between 2 diff blocks
                 for i in range(0, diff_block_src_start - src_line_index):

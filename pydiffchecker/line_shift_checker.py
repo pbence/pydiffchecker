@@ -29,7 +29,7 @@ class ShiftedLines(Sized, Iterable):
 
 class LineShiftChecker:
     SUBMODULE_MODE = '160000'
-    DIFF_BLOCK_REGEX = r'@@ -(\d+),(\d+) \+(\d+),(\d+) @@'
+    DIFF_BLOCK_REGEX = r'@@ -(\d+)(?:,\d+)? \+(\d+)(?:,\d+)? @@'
 
     def __init__(self, revision_since: str, revision_until: str) -> None:
         self.revision_since = revision_since
@@ -56,7 +56,7 @@ class LineShiftChecker:
             matches = re.search(LineShiftChecker.DIFF_BLOCK_REGEX, line)
             if matches:
                 diff_block_src_start = int(matches.group(1))
-                diff_block_dst_start = int(matches.group(3))
+                diff_block_dst_start = int(matches.group(2))
 
                 # fill shifted lines between 2 diff blocks
                 for i in range(0, diff_block_src_start - src_line_index):
